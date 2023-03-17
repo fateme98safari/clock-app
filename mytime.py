@@ -1,8 +1,8 @@
 class MyTime():
-    def __init__(self,h,m,s):
-        self.hour=h
-        self.minute=m
-        self.second=s
+    def __init__(self,hour,minute,second):
+        self.hour=hour
+        self.minute=minute
+        self.second=second
 
 
     def plus(self):
