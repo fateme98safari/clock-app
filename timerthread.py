@@ -20,17 +20,9 @@ class TimerThread(QThread):
         self.time.hour=0
 
     
-def start_timer():
-    Thread_timer.start()
-
-def stop_timer():
-    Thread_timer.terminate()
-
-def reset_timer():
-    Thread_timer.reset()
 
 # def show_time_timer(time):
 #     mainwindow.ui.lnhour.setText(str(time.hour))
 #     mainwindow.ui.lnminute.setText(str(time.minute))
 #     mainwindow.ui.lnsecond.setText(str(time.second))
-Thread_timer=TimerThread()
+

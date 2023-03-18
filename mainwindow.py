@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QLabel, QLineEdit,
-    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
-    QStatusBar, QTabWidget, QTimeEdit, QToolBar,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
+    QLineEdit, QMainWindow, QMenuBar, QPushButton,
+    QSizePolicy, QStatusBar, QTabWidget, QTimeEdit,
+    QToolBar, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -35,9 +35,27 @@ class Ui_MainWindow(object):
         self.label = QLabel(self.tab)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(130, 40, 151, 51))
-        self.label_2 = QLabel(self.tab)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(130, 80, 171, 71))
+        self.widget = QWidget(self.tab)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(30, 130, 401, 20))
+        self.horizontalLayout = QHBoxLayout(self.widget)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.lbl_ir_time = QLabel(self.widget)
+        self.lbl_ir_time.setObjectName(u"lbl_ir_time")
+
+        self.horizontalLayout.addWidget(self.lbl_ir_time)
+
+        self.lbl_gr_time = QLabel(self.widget)
+        self.lbl_gr_time.setObjectName(u"lbl_gr_time")
+
+        self.horizontalLayout.addWidget(self.lbl_gr_time)
+
+        self.label_4 = QLabel(self.widget)
+        self.label_4.setObjectName(u"label_4")
+
+        self.horizontalLayout.addWidget(self.label_4)
+
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
@@ -142,7 +160,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -151,7 +169,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label.setText("")
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.lbl_ir_time.setText("")
+        self.lbl_gr_time.setText("")
+        self.label_4.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"World Clock", None))
         self.btn_add_alarm.setText(QCoreApplication.translate("MainWindow", u"+", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Alarm", None))

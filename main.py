@@ -1,5 +1,6 @@
 import sys
 import time
+import datetime
 from functools import partial
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
@@ -8,103 +9,77 @@ from PySide6.QtUiTools import *
 from mainwindow import Ui_MainWindow
 from mytime import MyTime
 from alarmdatabase import Datebase
-# from timerthread import TimerThread
-
-
-class MyWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        # self.time_label=QLabel
-        self.timer=QTimer
-        self.timer.timeout.connect(self.update_time)
-        self.timer.start(1000)
-
-    def update_time(self):
-        current_time=QTime.currentTime()
-        time_str=current_time.toString("hh:mm:ss")
-
-        self.time_label.setText(time_str)
-
-
-def iran_time():
-    ...
-def  germany_time():
-    ...
-def USA_time():
-    ...
-
-
-#-----worldclockThread-----------------------------------------------------
-# class WorldclockThread(QThread):
-#     def __init__(self):
-#         super().__init__()
-#         self.time=MyTime(0,0,0)
-        
-    
-#     def run(self):
-#         # while True:
-#         #     self.time.plus()
-#         #     self.signal_show.emit(self.time)
-#         #     time.sleep(1)
-#         ...
+from alarmthread import AlarmThread
+from timerthread import TimerThread
+from stopwatchtread import StpoWatchThread
 
 
 
-class StpoWatchThread(QThread):
+class Worldclockthread_iran(QThread):
     signal_show=Signal(MyTime)
     def __init__(self):
         super().__init__()
-        self.time=MyTime(0,0,0)
-        
-    
+        self.now = datetime.datetime.now()
+        self.now.time()
+        datetime.time()
+        hour=self.now.hour
+        minute=self.now.minute
+        second=self.now.second
+        self.time=MyTime(hour,minute,second)
+        self.show_time_worldclock(self.time)
+
+
     def run(self):
-        while True:
+         while True:
+            Thread_worldclock.start()
             self.time.plus()
             self.signal_show.emit(self.time)
             time.sleep(1)
 
-    def reset(self):
-         self.time.hour=0
-         self.time.minute=0
-         self.time.second=0
+    def show_time_worldclock(time):
+        mainwindow.ui.lbl_ir_time.setText((f"{time.hour}:{time.minute}:{time.second}"))
+
+    class Worldclockthread_germany(QThread):
+        signal_show=Signal(MyTime)
+        def __init__(self):
+            super().__init__()
+            self.now = datetime.datetime.now()
+            self.now.time()
+            datetime.time()
+            hour=self.now.hour
+            minute=self.now.minute
+            second=self.now.second
+            self.time=MyTime(hour,minute,second)
+            self.show_time_worldclock(self.time)
 
 
-def start_stopwatch():
-        Thread_stopwatch.start()
+        def run(self):
+            while True:
+                Thread_worldclock.start()
+                self.time.convert_ir_to_germany()
+                self.signal_show.emit(self.time)
+                time.sleep(1)
 
-def stop_stopwatch():
-     Thread_stopwatch.terminate()
+        def show_time_worldclock(time):
+            mainwindow.ui.lbl_gr_time.setText((f"{time.hour}:{time.minute}:{time.second}"))
+       
+        # mainwindow.ui.label_4.setText(str(time.second))
+    #<<<<<<<<<<<<<<<<<Stopwatch Functions>>>>>>>>>>>>>>>
 
-def reset_stopwatch():
-     Thread_stopwatch.reset()
+    def start_stopwatch():
+            Thread_stopwatch.start()
 
-def show_time_stopwatch(time):
-     mainwindow.ui.lbl_stopwatch.setText(f"{time.hour}:{time.minute}:{time.second}")
+    def stop_stopwatch():
+        Thread_stopwatch.terminate()
 
+    def reset_stopwatch():
+        Thread_stopwatch.reset()
 
+    def show_time_stopwatch(time):
+        mainwindow.ui.lbl_stopwatch.setText(f"{time.hour}:{time.minute}:{time.second}")
 
-#TimerThread class------------------------------------------------------------------
-
-class TimerThread(QThread):
-    signal_show=Signal(MyTime)
-    def __init__(self):
-        super().__init__()
-        self.time=MyTime(0,15,30)
-        # mainwindow.ui.lnhour.textChanged.connect(self.run)
-        # mainwindow.ui.lnminute.textChanged.connect(self.run)
-        # mainwindow.ui.lnsecond.textChanged.connect(self.run)
-    def run(self):
-        while True:
-            self.time.minus()
-            self.signal_show.emit(self.time)
-            time.sleep(1)
-
-    def reset(self):
-        self.time.second=30
-        self.time.minute=15
-        self.time.hour=0
-
-    
+#<<<<<<<<<<<<<<<<<Timer Functions>>>>>>>>>>>>>>>>>>> 
+   
 def start_timer():
     Thread_timer.start()
 
@@ -119,12 +94,14 @@ def show_time_timer(time):
     mainwindow.ui.lnminute.setText(str(time.minute))
     mainwindow.ui.lnsecond.setText(str(time.second))
 
+
+
 # if time.hour==0 and time.minute==0 and time.second==0:
 #         msg_box=QMessageBox()
 #         msg_box.setText("💥Time is out💥")
 #         msg_box.exec()
 
-#Alarm Thread class------------------------------------------------------------------
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -161,7 +138,7 @@ class MainWindow(QMainWindow):
             new_btn.setText("❌")
             new_btn_edit.setText("✔")
             new_btn.clicked.connect(partial(self.del_alarm, alarms[i][0]))
-            new_btn_edit.clicked.connect(self.notification)
+            new_btn_edit.clicked.connect(self.msgupdate)
             new_lineEdi_title.textChanged.connect(partial(self.edit_alarm , alarms[i][0]))
             # new_lineEdi_time.textChanged.connect(partial(self.edit_alarm , alarms[i][0]))
             self.ui.gl_alarms.addWidget(new_lineEdi_title , i ,1)
@@ -169,12 +146,10 @@ class MainWindow(QMainWindow):
             self.ui.gl_alarms.addWidget(new_lineEdi_time , i ,0)
             self.ui.gl_alarms.addWidget(new_btn_edit,i,3)
 
-    def notification(self):
+    def msgupdate(self):
         msg_box=QMessageBox()
-        msg_box.setText("update sucssfully")
+        msg_box.setText("update successfully")
         msg_box.exec_()
-
-
 
 
     def new_alarm(self):
@@ -208,9 +183,12 @@ if __name__=="__main__":
 
     Thread_stopwatch=StpoWatchThread()
     Thread_timer=TimerThread()
-    Thread_worldclock=WorldclockThread()
+    Thread_worldclock=Worldclockthread_iran()
+    Thread_worldclock=Worldclockthread_germany()
+    Thread_worldclock=Worldclockthread_usa()
+    Thread_alarm=AlarmThread()
     Thread_stopwatch.signal_show.connect(show_time_stopwatch)
     Thread_timer.signal_show.connect(show_time_timer)
-    # Thread_worldclock.signal_show.connect(show_time_worldclock)
+    Thread_worldclock.signal_show.connect(show_time_worldclock)
 
     app.exec_()

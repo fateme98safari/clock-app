@@ -23,3 +23,7 @@ class MyTime():
         if self.minute==0:
             self.minute=60
             self.hour-=1
+
+    def convert_ir_to_germany(self):
+        self.minute+=30
+        self.hour+=2
